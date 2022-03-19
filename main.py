@@ -9,7 +9,6 @@ def ekstraksi_data():
     hasil['tanggal'] = '24 agustus 2022'
     hasil['waktu'] = '12:05:52 WIB'
     hasil['magnitudo'] = 4.0
-
     hasil['lokasi'] = {'ls': 1.48, 'BT': 134.01}
     hasil['pusat'] = 'Pusat gempa beradada di darat 19 km barat laut aceh'
     hasil['dirasakan'] = 'Dirasakan (Skala MMI): II-III Manokwari, II-III Aceh'
