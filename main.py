@@ -2,6 +2,7 @@
 APLIKASI DETEKSI GEMPA
 MODULARISASI DENGAN FUNCTION
 MODULARISAI DENGAN PACKAGE
+
 """
 import gempaterkini
 if __name__ == '__main__':

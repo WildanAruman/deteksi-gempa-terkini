@@ -1,20 +1,71 @@
-def ekstraksi_data():
-    hasil = dict()
-    hasil['tanggal'] = '24 agustus 2022'
-    hasil['waktu'] = '12:05:52 WIB'
-    hasil['magnitudo'] = 4.0
-    hasil['lokasi'] = {'ls': 1.48, 'BT': 134.01}
-    hasil['pusat'] = 'Pusat gempa beradada di darat 19 km barat laut aceh'
-    hasil['dirasakan'] = 'Dirasakan (Skala MMI): II-III Manokwari, II-III Aceh'
+import requests
+from bs4 import BeautifulSoup
 
-    return hasil
+
+def ekstraksi_data():
+    try:
+        content = requests.get('https://bmkg.go.id')
+    except Exception:
+        return None
+    if content.status_code == 200:
+        soup = BeautifulSoup(content.text, 'html.parser')
+        result = soup.find('span', {'class': 'waktu'})
+        result = result.text.split(', ')
+        waktu = result[1]
+        tanggal = result[0]
+        result = soup.find('div', {'class': 'col-md-6 col-xs-6 gempabumi-detail no-padding'})
+        result = result.findChildren('li')
+
+
+        i = 0
+        magnitudo = None
+        ls = None
+        bt = None
+        pusat = None
+        dirasakan = None
+        lokasi = None
+
+        for res in result:
+            print(i, res)
+
+            if i == 1:
+                magnitudo = res.text
+            elif i == 2:
+                kedalaman = res.text
+            elif i == 3:
+                koordinat = res.text.split(' - ')
+                ls = koordinat[0]
+                bt = koordinat[1]
+
+            elif i == 4:
+                lokasi = res.text
+
+            elif i == 5:
+                dirasakan = res.text
+
+            i = i + 1
+        hasil = dict()
+        hasil['tanggal'] = tanggal
+        hasil['waktu'] = waktu
+        hasil['magnitudo'] = magnitudo
+        hasil['kedalaman'] = kedalaman
+        hasil['koordinat'] = {'ls': ls, 'bt': bt}
+        hasil['lokasi'] = lokasi
+        hasil['dirasakan'] = dirasakan
+        return hasil
+    else:
+        return None
 
 
 def tampilkan_data(result):
+    if result is None:
+        print('Tidak bisa menemukan data gempa terkini')
+        return
     print('Gempa terakhir berdasarkan data BMKG')
     print(f"Tanggal, {result['tanggal']}")
     print(f"waktu, {result['waktu']}")
     print(f"Magnitudo, {result['magnitudo']}")
-    print(f"Lokasi: LS = {result['lokasi']['ls']}, BT = {result['lokasi']['ls']} ")
-    print(f"Pusat, {result['pusat']}")
+    print(f"kedalaman, {result['kedalaman']}")
+    print(f"koordinat: {result['koordinat']['ls']}, {result['koordinat']['bt']}")
+    print(f"Lokasi: {result['lokasi']}")
     print(f"Dirasakan, {result['dirasakan']}")
